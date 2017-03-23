@@ -435,7 +435,8 @@
             </section>
     </div>
     <div class="tab-pane fade tab-source-code" id="source">
-        <pre><code class="hljs javascript">import { Injectable } from &#x27;@angular/core&#x27;;
+        <pre><code class="hljs javascript">import * as S from &#x27;string&#x27;;
+import { Injectable } from &#x27;@angular/core&#x27;;
 import { RequestOptions, Headers, Response } from &#x27;@angular/http&#x27;;
 import { ODataPagedResult } from &#x27;./angularODataPagedResult&#x27;;
 
@@ -450,34 +451,42 @@ export class KeyConfigs {
 
 @Injectable()
 export class ODataConfiguration {
+    private readonly _postHeaders &#x3D; new Headers({ &#x27;Content-Type&#x27;: &#x27;application/json; charset&#x3D;utf-8&#x27; });
+
+    private _baseUrl: string &#x3D; &#x27;http://localhost/odata&#x27;;
+
     public keys: KeyConfigs &#x3D; new KeyConfigs();
-    public baseUrl: string &#x3D; &#x27;http://localhost/odata&#x27;;
+    public defaultRequestOptions: RequestOptions &#x3D; new RequestOptions({ body: &#x27;&#x27; });
+    public postRequestOptions: RequestOptions &#x3D; new RequestOptions({ headers: this._postHeaders });
 
-    public getEntityUri(entityKey: string, _typeName: string) {
+    set baseUrl(baseUrl: string) {
+        this._baseUrl &#x3D; S(baseUrl).stripRight(&#x27;/&#x27;).s;
+    }
 
-        // check if string is a GUID (UUID) type
+    get baseUrl(): string {
+        return this._baseUrl;
+    }
+
+    public getEntitiesUri(typeName: string): string {
+        return this.baseUrl + &#x27;/&#x27; + this.sanitizeTypeName(typeName);
+    }
+
+    public getEntityUri(entityKey: string, typeName: string): string {
+        // check if entityKey is a GUID (UUID) type
         if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(entityKey)) {
-            return this.baseUrl + &#x27;/&#x27; + _typeName + &#x27;(&#x27; + entityKey + &#x27;)&#x27;;
+            return this.getEntitiesUri(typeName) + &#x27;(&#x27; + entityKey + &#x27;)&#x27;;
         }
 
+        // check if entityKey is not a number
         if (!/^[0-9]*$/.test(entityKey)) {
-            return this.baseUrl + &#x27;/&#x27; + _typeName + &#x27;(\&#x27;&#x27; + entityKey + &#x27;\&#x27;)&#x27;;
+            return this.getEntitiesUri(typeName) + &#x27;(\&#x27;&#x27; + entityKey + &#x27;\&#x27;)&#x27;;
         }
 
-        return this.baseUrl + &#x27;/&#x27; + _typeName + &#x27;(&#x27; + entityKey + &#x27;)&#x27;;
+        return this.getEntitiesUri(typeName) + &#x27;(&#x27; + entityKey + &#x27;)&#x27;;
     }
 
     public handleError(err: any, caught: any): void {
         console.warn(&#x27;OData error: &#x27;, err, caught);
-    };
-
-    get requestOptions(): RequestOptions {
-        return new RequestOptions({ body: &#x27;&#x27; });
-    };
-
-    get postRequestOptions(): RequestOptions {
-        const headers &#x3D; new Headers({ &#x27;Content-Type&#x27;: &#x27;application/json; charset&#x3D;utf-8&#x27; });
-        return new RequestOptions({ headers: headers });
     }
 
     public extractQueryResultData&lt;T&gt;(res: Response): T[] {
@@ -511,6 +520,10 @@ export class ODataConfiguration {
         }
 
         return pagedResult;
+    }
+
+    private sanitizeTypeName(typeName: string): string {
+        return S(typeName).stripLeft(&#x27;/&#x27;).stripRight(&#x27;/&#x27;).s;
     }
 }
 </code></pre>

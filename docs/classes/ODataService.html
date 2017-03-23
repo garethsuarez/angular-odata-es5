@@ -316,7 +316,7 @@
                         <tbody>
                             <tr>
                                 <td class="col-md-4">
-                                    <code>constructor(_typeName: string, http: <a href="https://angular.io/docs/ts/latest/api/http/index/Http-class.html" target="_blank" >Http</a>, config: <a href="../injectables/ODataConfiguration.html" >ODataConfiguration</a>)</code>
+                                    <code>constructor(_typeName: string, _http: <a href="https://angular.io/docs/ts/latest/api/http/index/Http-class.html" target="_blank" >Http</a>, config: <a href="../injectables/ODataConfiguration.html" >ODataConfiguration</a>)</code>
                                 </td>
                             </tr>
             
@@ -626,47 +626,50 @@ import { ODataQuery } from &#x27;./angularODataQuery&#x27;;
 import { GetOperation } from &#x27;./angularODataOperation&#x27;;
 
 export class ODataService&lt;T&gt; {
+    private _entitiesUri: string;
 
-    constructor(private _typeName: string, private http: Http, private config: ODataConfiguration) { }
+    constructor(private _typeName: string, private _http: Http, private config: ODataConfiguration) {
+        this._entitiesUri &#x3D; config.getEntitiesUri(_typeName);
+    }
 
-    public get TypeName(){
+    public get TypeName(): string {
         return this._typeName;
     }
 
     public Get(key: string): GetOperation&lt;T&gt; {
-        return new GetOperation&lt;T&gt;(this._typeName, this.config, this.http, key);
+        return new GetOperation&lt;T&gt;(this._typeName, this.config, this._http, key);
     }
 
     public Post(entity: T): Observable&lt;T&gt; {
         const body &#x3D; JSON.stringify(entity);
-        return this.handleResponse(this.http.post(this.config.baseUrl + &#x27;/&#x27; + this.TypeName, body, this.config.postRequestOptions));
+        return this.handleResponse(this._http.post(this._entitiesUri, body, this.config.postRequestOptions));
     }
 
     public CustomAction(key: string, actionName: string, postdata: any): Observable&lt;any&gt; {
         const body &#x3D; JSON.stringify(postdata);
-        return this.http.post(this.getEntityUri(key) + &#x27;/&#x27; + actionName, body, this.config.requestOptions).map(resp &#x3D;&gt; resp.json());
+        return this._http.post(this.getEntityUri(key) + &#x27;/&#x27; + actionName, body, this.config.defaultRequestOptions).map(resp &#x3D;&gt; resp.json());
     }
 
     public CustomFunction(key: string, actionName: string): Observable&lt;any&gt; {
-        return this.http.get(this.getEntityUri(key) + &#x27;/&#x27; + actionName, this.config.requestOptions).map(resp &#x3D;&gt; resp.json());
+        return this._http.get(this.getEntityUri(key) + &#x27;/&#x27; + actionName, this.config.defaultRequestOptions).map(resp &#x3D;&gt; resp.json());
     }
 
     public Patch(entity: any, key: string): Observable&lt;Response&gt; {
         const body &#x3D; JSON.stringify(entity);
-        return this.http.patch(this.getEntityUri(key), body, this.config.postRequestOptions);
+        return this._http.patch(this.getEntityUri(key), body, this.config.postRequestOptions);
     }
 
     public Put(entity: T,  key: string): Observable&lt;T&gt; {
         const body &#x3D; JSON.stringify(entity);
-        return this.handleResponse(this.http.put(this.getEntityUri(key), body, this.config.postRequestOptions));
+        return this.handleResponse(this._http.put(this.getEntityUri(key), body, this.config.postRequestOptions));
     }
 
     public Delete(key: string): Observable&lt;Response&gt; {
-        return this.http.delete(this.getEntityUri(key), this.config.requestOptions);
+        return this._http.delete(this.getEntityUri(key), this.config.defaultRequestOptions);
     }
 
     public Query(): ODataQuery&lt;T&gt; {
-        return new ODataQuery&lt;T&gt;(this.TypeName, this.config, this.http);
+        return new ODataQuery&lt;T&gt;(this.TypeName, this.config, this._http);
     }
 
     protected getEntityUri(entityKey: string): string {

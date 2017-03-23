@@ -316,7 +316,7 @@
                         <tbody>
                             <tr>
                                 <td class="col-md-4">
-                                    <code>constructor(_typeName: string, config: <a href="../injectables/ODataConfiguration.html" >ODataConfiguration</a>, http: <a href="https://angular.io/docs/ts/latest/api/http/index/Http-class.html" target="_blank" >Http</a>)</code>
+                                    <code>constructor(typeName: string, config: <a href="../injectables/ODataConfiguration.html" >ODataConfiguration</a>, http: <a href="https://angular.io/docs/ts/latest/api/http/index/Http-class.html" target="_blank" >Http</a>)</code>
                                 </td>
                             </tr>
             
@@ -505,9 +505,12 @@ export class ODataQuery&lt;T&gt; extends ODataOperation&lt;T&gt; {
     private _top: number;
     private _skip: number;
     private _orderBy: string;
+    private _entitiesUri: string;
 
-    constructor(_typeName: string, config: ODataConfiguration, http: Http) {
-        super(_typeName, config, http);
+    constructor(typeName: string, config: ODataConfiguration, http: Http) {
+        super(typeName, config, http);
+
+        this._entitiesUri &#x3D; config.getEntitiesUri(this.typeName);
     }
 
     public Filter(filter: string): ODataQuery&lt;T&gt; {
@@ -533,7 +536,7 @@ export class ODataQuery&lt;T&gt; extends ODataOperation&lt;T&gt; {
     public Exec(): Observable&lt;Array&lt;T&gt;&gt; {
         const params &#x3D; this.getQueryParams();
         const config &#x3D; this.config;
-        return this.http.get(this.buildResourceURL(), { search: params })
+        return this.http.get(this._entitiesUri, { search: params })
             .map(res &#x3D;&gt; this.extractArrayData(res, config))
             .catch((err: any, caught: Observable&lt;Array&lt;T&gt;&gt;) &#x3D;&gt; {
                 if (this.config.handleError) {
@@ -548,7 +551,7 @@ export class ODataQuery&lt;T&gt; extends ODataOperation&lt;T&gt; {
         params.set(&#x27;$count&#x27;, &#x27;true&#x27;); // OData v4 only
         const config &#x3D; this.config;
 
-        return this.http.get(this.buildResourceURL(), { search: params })
+        return this.http.get(this._entitiesUri, { search: params })
             .map(res &#x3D;&gt; this.extractArrayDataWithCount(res, config))
             .catch((err: any, caught: Observable&lt;ODataPagedResult&lt;T&gt;&gt;) &#x3D;&gt; {
                 if (this.config.handleError) {
@@ -556,10 +559,6 @@ export class ODataQuery&lt;T&gt; extends ODataOperation&lt;T&gt; {
                 }
                 return Observable.throw(err);
             });
-    }
-
-    private buildResourceURL(): string {
-        return this.config.baseUrl + &#x27;/&#x27; + this._typeName + &#x27;/&#x27;;
     }
 
     private getQueryParams(): URLSearchParams {
