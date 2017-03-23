@@ -1,6 +1,6 @@
 {
   "name": "angular-odata-es5",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "OData service for Angular (es5 version)",
   "main": "./bundles/angular-odata-es5.umd.js",
   "module": "./index.js",
@@ -23,6 +23,7 @@
     "prerelease": "npm test",
     "release:git": "git add package.json && git commit -m \"chore: bump version number\" && standard-version --first-release && git push --follow-tags origin master",
     "release:npm": "npm run build:dist && npm run copyfiles && npm publish dist",
+    "pack:npm": "npm run build:dist && npm run copyfiles && npm pack dist",
     "release": "npm run release:git && npm run release:npm",
     "postrelease": "npm run build:clean && npm run gh-pages",
     "commitmsg": "validate-commit-msg",
@@ -62,7 +63,7 @@
     "@types/node": "7.0.0",
     "@types/sinon": "^1.16.27",
     "@types/sinon-chai": "^2.7.26",
-    "@types/urijs": "^1.15.31",
+    "@types/string": "0.0.28",
     "@types/webpack": "^2.2.8",
     "awesome-typescript-loader": "^3.0.8",
     "bootstrap": "^3.3.7",
@@ -90,7 +91,6 @@
     "karma-webpack": "^2.0.1",
     "phantomjs-prebuilt": "^2.1.7",
     "primeng": "^2.0.3",
-    "rxjs": "^5.0.1",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0",
     "standard-version": "^4.0.0",
@@ -98,7 +98,6 @@
     "tslint": "^4.0.2",
     "tslint-loader": "^3.3.0",
     "typescript": "~2.0.10",
-    "urijs": "^1.18.9",
     "validate-commit-msg": "^2.8.0",
     "webpack": "^2.2.0",
     "webpack-angular-externals": "^1.0.0",
@@ -107,11 +106,17 @@
     "zone.js": "^0.7.4"
   },
   "peerDependencies": {
-    "@angular/core": ">=2.0.0 <5.0.0"
+    "@angular/common": ">=2.0.0 <5.0.0",
+    "@angular/core": ">=2.0.0 <5.0.0",
+    "@angular/http": ">=2.0.0 <5.0.0"
   },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "rxjs": "^5.0.0",
+    "string": "^3.3.3"
   }
 }
