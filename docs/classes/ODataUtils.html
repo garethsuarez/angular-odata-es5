@@ -62,7 +62,7 @@
                                 id="xs-modules-links"
                             >
                                 <li class="link">
-                                    <a href="../modules/AngularODataModule.html"  class="active" >AngularODataModule</a>
+                                    <a href="../modules/AngularODataModule.html" >AngularODataModule</a>
                                 </li>
                         </ul>
                     </li>
@@ -99,7 +99,7 @@
                                     <a href="../classes/ODataService.html" >ODataService</a>
                                 </li>
                                 <li class="link">
-                                    <a href="../classes/ODataUtils.html" >ODataUtils</a>
+                                    <a href="../classes/ODataUtils.html"  class="active" >ODataUtils</a>
                                 </li>
                                 <li class="link">
                                     <a href="../classes/OperationWithEntity.html" >OperationWithEntity</a>
@@ -197,7 +197,7 @@
                                        id="modules-links"
                    >
                                        <li class="link">
-                                           <a href="../modules/AngularODataModule.html"  class="active" >AngularODataModule</a>
+                                           <a href="../modules/AngularODataModule.html" >AngularODataModule</a>
                                        </li>
                                </ul>
                            </li>
@@ -234,7 +234,7 @@
                                            <a href="../classes/ODataService.html" >ODataService</a>
                                        </li>
                                        <li class="link">
-                                           <a href="../classes/ODataUtils.html" >ODataUtils</a>
+                                           <a href="../classes/ODataUtils.html"  class="active" >ODataUtils</a>
                                        </li>
                                        <li class="link">
                                            <a href="../classes/OperationWithEntity.html" >OperationWithEntity</a>
@@ -284,14 +284,18 @@
                    
                    </nav>
                </div>
-               <div class="content module">
+               <div class="content class">
                    <div class="content-data">
 
-<ol class="breadcrumb">
-  <li>Modules</li>
-  <li>AngularODataModule</li>
-</ol>
 
+
+
+
+
+<ol class="breadcrumb">
+  <li>Classes</li>
+  <li>ODataUtils</li>
+</ol>
 
 <ul class="nav nav-tabs" role="tablist">
     <li class="active">
@@ -308,41 +312,108 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>src/angularOData.module.ts</code>
+            <code>src/angularODataUtils.ts</code>
         </p>
 
 
-        <div class="container-fluid module">
-            <div class="row">
-            </div>
-        </div>
+
+            <section>
+                <h3 id="methods">Methods</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="col-md-4">
+                                    <b><span class="modifier">Public</span> convertObjectToString</b>
+                                </td>
+                            </tr>
+            
+                            <tr>
+                                <td class="col-md-4">
+                                        <span class="modifier-icon method fa fa-play circle">
+                                            <span class="fa fa-circle"></span>
+                                        </span>
+                                    <code>convertObjectToString(obj: any)</code>
+                                </td>
+                            </tr>
+            
+                            <tr>
+                                <td class="col-md-4">
+                                        <div class="io-description">
+                                            <b>Returns: </b>    <code>string</code>
+            
+                                        </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="col-md-4">
+                                    <b><span class="modifier">Public</span> quoteValue</b>
+                                </td>
+                            </tr>
+            
+                            <tr>
+                                <td class="col-md-4">
+                                        <span class="modifier-icon method fa fa-play circle">
+                                            <span class="fa fa-circle"></span>
+                                        </span>
+                                    <code>quoteValue(value: string)</code>
+                                </td>
+                            </tr>
+            
+                            <tr>
+                                <td class="col-md-4">
+                                        <div class="io-description">
+                                            <b>Returns: </b>    <code>string</code>
+            
+                                        </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </section>
+
+
     </div>
     <div class="tab-pane fade tab-source-code" id="source">
-        <pre><code class="hljs javascript">import { NgModule, ModuleWithProviders } from &#x27;@angular/core&#x27;;
-import { CommonModule } from &#x27;@angular/common&#x27;;
+        <pre><code class="hljs javascript">import { forEach } from &#x27;@angular/router/src/utils/collection&#x27;;
+import * as util from &#x27;util&#x27;;
+import * as S from &#x27;string&#x27;;
 
-@NgModule({
-  declarations: [ ],
-  imports: [ CommonModule ],
-  exports: [ ]
-})
-export class AngularODataModule {
+export class ODataUtils {
+    public static convertObjectToString(obj: any): string {
+        const properties: string[] &#x3D; [];
 
-  public static forRoot(): ModuleWithProviders {
-    return {
-      ngModule: AngularODataModule
-    };
-  }
+        for (const prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                const value: string &#x3D; this.quoteValue(obj[prop]);
 
+                properties.push(&#x60;${prop}&#x3D;${value}&#x60;);
+            }
+        }
+        return properties.join(&#x27;, &#x27;)
+    }
+
+    public static quoteValue(value: string): string {
+        // check if GUID (UUID) type
+        if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)) {
+            return value;
+        }
+
+        // check if not a number
+        const valueAsNumber: number &#x3D; Number(value);
+        if (isNaN(valueAsNumber)) {
+            return &#x60;&#x27;${value}&#x27;&#x60;;
+        }
+
+        return value;
+    }
 }
 </code></pre>
     </div>
 </div>
-
-
-
-
-
 
 
 
