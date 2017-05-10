@@ -466,7 +466,7 @@ export class ODataConfiguration {
     private _baseUrl: string &#x3D; &#x27;http://localhost/odata&#x27;;
 
     public keys: KeyConfigs &#x3D; new KeyConfigs();
-    public defaultRequestOptions: RequestOptions &#x3D; new RequestOptions({ body: &#x27;&#x27; });
+    public defaultRequestOptions: RequestOptions &#x3D; new RequestOptions();
     public postRequestOptions: RequestOptions &#x3D; new RequestOptions({ headers: this._postHeaders });
 
     set baseUrl(baseUrl: string) {
