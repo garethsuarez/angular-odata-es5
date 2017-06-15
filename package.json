@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/StefH/angular-odata-es5#readme",
   "devDependencies": {
-    "@angular/animations": "^4.0.0",
+    "@angular/animations": "4.2.1",
     "@angular/common": "^4.0.0",
     "@angular/compiler": "^4.0.0",
     "@angular/compiler-cli": "^4.0.0",
